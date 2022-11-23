@@ -79,20 +79,29 @@ var svg = d3.select("#my_dataviz")
     .attr("width", width)
     .attr("height", height)
 
-// Read data
-d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/11_SevCatOneNumNestedOneObsPerGroup.csv", function(data) {
+var data = [
+    {'name': 'GOOG', 'value': 70},
+    {'name': 'AAPL', 'value': 44},
+    {'name': 'AMZN', 'value': 65},
+    {'name': 'HD', 'value': 39},
+]
 
-  // Filter a bit the data -> more than 1 million inhabitants
-  data = data.filter(function(d){ return d.value>10000000 })
 
-  // Color palette for continents?
-  var color = d3.scaleOrdinal()
-    .domain(["Asia", "Europe", "Africa", "Oceania", "Americas"])
+//  data = d3.nest()
+//  .key(function(d){return d.name})
+//  .map(fruit)
+
+ console.log(data[0].value)
+  //console.log(typeof(data.stocks.value))
+
+
+ var color = d3.scaleOrdinal()
+    .domain(["GOOG", "AAPL", "AMZN", "HD"])
     .range(d3.schemeSet1);
 
   // Size scale for countries
   var size = d3.scaleLinear()
-    .domain([0, 1400000000])
+    .domain([0, 200])
     .range([7,55])  // circle will be between 7 and 55 px wide
 
   // create a tooltip
@@ -106,14 +115,16 @@ d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_data
     .style("border-radius", "5px")
     .style("padding", "5px")
 
+
+
   // Three function that change the tooltip when user hover / move / leave a cell
-  var mouseover = function(d) {
+  var mouseover = function(data) {
     Tooltip
       .style("opacity", 1)
   }
-  var mousemove = function(d) {
+  var mousemove = function(data) {
     Tooltip
-      .html('<u>' + d.key + '</u>' + "<br>" + d.value + " inhabitants")
+      .html('<u>' + data.name + '</u>' + "<br>" + data.value + " quantity of stock")
       .style("left", (d3.mouse(this)[0]+20) + "px")
       .style("top", (d3.mouse(this)[1]) + "px")
   }
@@ -122,6 +133,7 @@ d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_data
       .style("opacity", 0)
   }
 
+
   // Initialize the circle: all located at the center of the svg area
   var node = svg.append("g")
     .selectAll("circle")
@@ -129,10 +141,10 @@ d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_data
     .enter()
     .append("circle")
       .attr("class", "node")
-      .attr("r", function(d){ return size(d.value)})
+      .attr("r", function(data){return size(data.value)})
       .attr("cx", width / 2)
       .attr("cy", height / 2)
-      .style("fill", function(d){ return color(d.region)})
+      .style("fill", function(data){ return color(data.name)})
       .style("fill-opacity", 0.8)
       .attr("stroke", "black")
       .style("stroke-width", 1)
@@ -143,6 +155,9 @@ d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_data
            .on("start", dragstarted)
            .on("drag", dragged)
            .on("end", dragended));
+
+    
+
 
   // Features of the forces applied to the nodes:
   var simulation = d3.forceSimulation()
@@ -176,7 +191,6 @@ d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_data
     d.fy = null;
   }
 
-})
 
 </script>
   </body>
